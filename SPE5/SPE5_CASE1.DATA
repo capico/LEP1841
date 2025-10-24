@@ -1,0 +1,643 @@
+-- ******************************************************************
+--                           LEP1841
+-- ******************************************************************
+--
+---------------------------------------------------------------------
+----------------------- SPE 5 - CASE 1 ------------------------------
+---------------------------------------------------------------------
+--
+-- The simulation is based on the data given in: SPE-16000-MS,
+-- Fifth Comparative Solution Project: Evaluation of Miscible
+-- Flood Simulators, by J.E. Killough and C.A. Kossack, 1987
+--
+-- CASE 1 models a scenario where the average reservoir pressure 
+-- declined rapidly below the initial saturation pressure for most
+-- of the simulation.
+-- Minimum miscibility pressure: 3000 - 3200 psia.
+-- Initial saturation pressure: 2302.3 psia.
+-- A single WAG injection well is located at grid block i = 1, j = 1, 
+-- k = 1, while a production well is positioned at grid block i = 7, 
+-- j = 7, k = 3. The production well operates under a constraint of 
+-- a maximum oil production rate of 12000 STB/D with a minimum 
+-- bottomhole pressure of 1000 psia. Shut-in criteria were defined 
+-- by a gas-oil ratio (GOR) threshold of 10 MCF/STB and a water-oil 
+-- ratio  (WOR) limit of 5 STB/STB.
+-- After two years of production only, WAG injection begins on 
+-- one-year cycles, starting with water injection, for a period of 
+-- 18 more years. The injection well operates at a maximum 
+-- bottomhole pressure of 10000 psia, gas rate = 12000 MCF/D and 
+-- water rate = 12000 STB/D.
+
+-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- IMPORTANT: To run with OPM Flow (2023.10), use the following command:
+-- flow --enable-tuning=true SPE5_CASE1.DATA
+
+RUNSPEC ====================================================================
+
+TITLE
+    SPE Fifth Comparative Solution Project - CASE 1 (4 CP)
+
+DIMENS
+--  Nx  Ny  Nz
+    7   7   3 
+/
+
+FIELD
+
+OIL
+WATER
+GAS
+DISGAS
+
+-- Enables the four-component solvent model
+SOLVENT
+
+MISCIBLE
+-- Miscible treatment of hydrocarbons
+-- NTMISC: the number miscible residual oil saturations versus water 
+-- saturations tables and the number Todd-Longstaff  mixing parameters.
+-- NSMISC: The maximum number of saturation nodes in any table of 
+-- miscible residual oil saturation versus water saturation.
+-- MISOPT: Option for upstreaming hydrocarbon relative permeabilities.
+--
+-- NTMISC   NSMISC      MISOPT
+    1          20       'NONE' 
+/
+
+-- Dimensions of equilibration tables
+EQLDIMS
+/
+
+-- Table dimensions
+TABDIMS 
+/
+
+-- Well dimension data
+WELLDIMS
+    3 1 1 3 
+/
+
+START
+    1 'JAN' 2000 
+/
+
+FMTIN
+UNIFOUT
+UNIFIN
+
+
+
+GRID    ====================================================================
+
+INIT
+
+DX
+    147*500
+/
+
+DY
+    147*500
+/
+
+DZ
+    49*20 49*30 49*50
+/
+
+PORO
+    147*0.3
+/
+
+PERMX
+    49*500 49*50 49*200
+/
+
+PERMY
+    49*500 49*50 49*200
+/
+
+PERMZ
+    49*50 49*50 49*25
+/
+
+TOPS
+    49*8325
+/
+
+-- -- not supported by OPM Flow
+-- RPTGRID
+--     'PORV' 'DEPTH' 'TRANX' 'TRANY' 'TRANZ' 
+-- /
+
+
+
+PROPS   ====================================================================
+
+-- The relative permeability data needs to be specified as follows:
+-- SWFN For any case containing water
+-- SGFN For krg in immiscible regions
+-- SOF2 For kr of the miscible hydrocarbon phase to water (four-component)
+-- SOF3 For kro on immiscible displacement regions (four-component)
+-- SSFN For Gas/solvent saturation functions
+
+-- Water saturation functions
+SWFN
+--  Sw      krw     pcow
+    0.20    0.0     45.00
+    0.2899  0.0022  19.03
+    0.3778  0.0180  10.07
+    0.4667  0.0607  4.90
+    0.5556  0.1438  1.80
+    0.6444  0.2809  0.50
+    0.7000  0.4089  0.05
+    0.7333  0.4855  0.01
+    0.8222  0.7709  0.00
+    0.9111  1.0000  0.00
+    1.0000  1.0000  0.00 
+/
+
+-- Gas saturation functions
+SGFN
+--  Sg      krg     pcgo
+    0.0000  0.0     0.0
+    0.0500  0.0     0.0
+    0.0889  0.001   0.0
+    0.1778  0.01    0.0
+    0.2667  0.03    0.001
+    0.3556  0.05    0.001
+    0.4444  0.1     0.03
+    0.5333  0.2     0.8
+    0.6222  0.35    3.0
+    0.6500  0.39    4.0
+    0.7111  0.56    8.0
+    0.8000  1.0     30.0 
+/
+
+-- Oil saturation functions (two-phase)
+-- in two-phase models, column 1 is the saturation of the oil phase 
+-- Sp = So and column 2 is the relative permeability of the oil phase 
+-- krp = kro.
+-- in solvent models, column 1 is the total hydrocarbon saturation 
+-- (including solvent) Sp = Sn = So + Sg + Ss and column 2 is the relative
+-- permeability of the miscible hydrocarbon with respect to water krp = krn.
+SOF2
+--  Sp      krp
+    0.0     0.0
+    0.0889  0.0
+    0.1778  0.0
+    0.2667  0.0
+    0.3000  0.0
+    0.3556  0.0123
+    0.4444  0.0835
+    0.5333  0.2178
+    0.6222  0.4153
+    0.7101  0.6769
+    0.8000  1.0000 
+/
+
+-- Oil saturation functions (three-phase)
+-- krow: The corresponding oil relative permeability for regions where only
+-- oil and water are present.
+-- krog: The corresponding oil relative permeability for regions where only 
+-- oil, gas and connate water are present.
+SOF3
+--  So      krow    krog
+    0.0     0.0     0.0
+    0.0889  0.0     0.0
+    0.15    1*      0.0
+    0.1778  0.0     0.0110
+    0.2667  0.0     0.0370
+    0.3000  0.0     1*
+    0.3556  0.0123  0.0878
+    0.4444  0.0835  0.1715
+    0.5333  0.2178  0.2963
+    0.6222  0.4153  0.4705
+    0.7101  0.6769  0.7023
+    0.75    1*      0.8800
+    0.8000  1.0000  1.0000 
+/
+
+-- Gas/solvent saturation functions
+-- Sf: the phase fraction of either the gas or the solvent 
+-- (Sgas / (Sgas + Ssolvent ) or Ssolvent / (Sgas + Ssolvent )).
+SSFN
+--  Sf   krg* krs*
+    0.0  0.0  0.0
+    1.0  1.0  1.0
+/
+
+-- Miscible residual oil saturation tables
+SORWMIS
+--  SWAT    SORWMIS
+    0.000   0.000
+    1.000   0.000
+/
+
+-- Miscible critical gas saturation tables
+SGCWMIS
+--  SWAT    SGCRMIS
+    0.0000  0.000
+    1.0000  0.000
+/
+
+-- Miscibility function tables
+-- Ss: The local solvent fraction (Ssolvent / (Ssolvent + Sgas))
+-- Misc: Miscibility fraction
+MISC
+    0.00    0.0
+    0.01    1.0 -- suggested in the appendix of Todd & Longstaff (1972)
+    1.00    1.0 
+/
+
+-- Pressure-dependent miscibility tables
+-- misciblity pressure linear "ramp" from 1500 to 3200 psia
+PMISC
+    1000 0.0    -- minimum pressure (producer well constraint)
+    1500 0.0
+    3200 1.0
+    5500 1.0    -- maximum value listed in the PVTO table 
+/
+
+-- Water PVT functions
+PVTW
+    4000.0  1.000  3.3D-6  0.70  0 
+/
+
+-- Rock compressibility
+ROCK
+--  pref    cf
+    4000.0  5.0D-6 
+/
+
+-- Fluid densities at surface conditions
+--
+--  oil     water   gas     solvent
+--  rho_o   rho_w   rho_g   rho_s
+DENSITY
+    38.53   62.40   0.06864         /
+SDENSITY
+                            0.06243 
+/
+
+-- Todd-Longstaff mixing parameter
+TLMIXPAR
+    0.6 
+/
+
+-- PVT properties of dry gas (no vaporized oil)
+PVDG
+--  p           Bg          mu_g
+    14.7        211.4160    0.0107
+    500.0       5.9242      0.0127
+    1000.0      2.8506      0.0134
+    1200.0      2.3441      0.0138
+    1500.0      1.8457      0.0145
+    1800.0      1.5202      0.0153
+    2000.0      1.3602      0.0159
+    2302.3      1.1751      0.0170
+    2500.0      1.1025      0.0177
+    3000.0      0.9852      0.0195
+    3500.0      0.9116      0.0214
+    4000.0      0.8621      0.0232
+    4500.0      0.8224      0.0250
+    4800.0      0.8032      0.0261 
+/
+
+-- PVT properties of the solvent
+PVDS
+--  p           Bs          mu_s
+    14.7        223.2140    0.011
+    500.0       5.6022      0.012
+    1000.0      2.5310      0.013
+    1200.0      2.0354      0.014
+    1500.0      1.5593      0.016
+    1800.0      1.2657      0.018
+    2000.0      1.1296      0.019
+    2302.3      0.9803      0.022
+    2500.0      0.9085      0.023
+    3000.0      0.7807      0.027
+    3500.0      0.6994      0.031
+    4000.0      0.6430      0.034
+    4500.0      0.6017      0.037
+    4800.0      0.5817      0.038 
+/
+
+-- PVT properties of live oil (with dissolved gas)
+PVTO
+--  Rs      p       Bo      mu_o
+    0.0000  14.7    1.0348  0.310 /
+    0.1176  500.0   1.1017  0.295 /
+    0.2226  1000.0  1.1478  0.274 /
+    0.2677  1200.0  1.1677  0.264 /
+    0.3414  1500.0  1.1997  0.249 /
+    0.4215  1800.0  1.2350  0.234 /
+    0.4790  2000.0  1.2600  0.224 /
+    0.5728  2302.3  1.3010  0.208
+            3302.3  1.2988  0.235   -- 3302.3  1.279150  ???
+            4302.3  1.2966  0.260 / -- 4302.3  1.257300  ???
+    0.6341  2500.0  1.3278  0.200 /
+    0.7893  3000.0  1.3956  0.187 /
+    0.9444  3500.0  1.4634  0.175 /
+    1.0995  4000.0  1.5312  0.167 /
+    1.2547  4500.0  1.5991  0.159 /    
+    1.3478  4800.0  1.6398  0.155
+            5500.0  1.6305  0.168 / -- 5500.0  1.624505  ???
+/
+
+-- -- not supported by OPM Flow
+-- RPTPROPS
+--     'SOF2' 'SWFN' 'SGFN' 'PVTW' 'PVTG' 'DENSITY' 'ROCK' 
+-- /
+
+
+
+SOLUTION ===================================================================
+
+-- Equilibration data specification
+EQUIL
+-- datum    datum   OWC     pcow    GOC     pcgo    Rs  
+-- depth    press   depth           depth           opt 
+    8400    4000    9900    0       1000    0       1    
+/
+
+-- Rs versus depth tables for equilibration
+RSVD
+    8200    0.5728
+    8500    0.5728 
+/
+
+RPTSOL
+    'FIP'
+/
+
+-- Controls on output to the RESTART file
+RPTRST
+  'BASIC=2' 'FIP'
+/
+
+
+
+SUMMARY ====================================================================
+
+FOPR
+FOPT
+FNPR
+FNPT
+FNIR
+FNIT
+FGPR
+FGPT
+FWIR
+FWIT
+FWPR
+FWPT
+
+FGOR
+FWCT
+
+FPR
+
+FOIP
+FGIP
+FWIP
+FOE
+ 
+WOPR
+    'PRODUCER'
+/
+
+WGPR
+    'PRODUCER'
+/
+
+WWPR
+    'PRODUCER'
+/
+
+WNPR
+    'PRODUCER'
+/
+
+WWCT
+    'PRODUCER'
+/
+
+WGOR
+    'PRODUCER'
+/
+
+WNIR
+    'INJ-G'
+/
+
+WWIR
+    'INJ-W'
+/
+
+WBHP
+    'PRODUCER'
+    'INJ-G'
+    'INJ-W'
+/
+
+BOSAT
+    1  1  1 /
+    4  4  1 /
+    7  7  3 /
+/
+
+BGSAT
+    1  1  1 /
+    4  4  1 /
+    7  7  3 /
+/
+
+BWSAT
+    1  1  1 /
+    4  4  1 /
+    7  7  3 /
+/
+
+BNSAT
+    1  1  1 /
+    4  4  1 /
+    7  7  3 /
+/
+
+PERFORMA 
+
+-- A RSM file is generated containing the tabulated output of SUMMARY data
+RUNSUM
+SEPARATE
+
+
+
+SCHEDULE ===================================================================
+
+-- Controls on output from SCHEDULE section
+RPTSCHED
+  'FIP' 
+/
+
+-- Controls on output to the RESTART file
+RPTRST
+  'BASIC=2' 'FIP' 
+/
+
+-- General specification data for wells
+WELSPECS
+--  well        group   location    BHP     phase       crossflow
+--  name        name    i   j       depth   fluid
+    'PRODUCER'  'G'     7   7       8400    'OIL'   3*      NO /
+    'INJ-G'     'G'     1   1       8335    'GAS'   3*      NO /
+    'INJ-W'     'G'     1   1       8335    'WAT'   3*      NO /
+/
+
+-- Well completion specification data
+COMPDAT
+--  well        -- location --  open    sat     conn    well
+--  name        ii  jj  k1  k2  shut    tab     fact    dia 
+    'PRODUCER'  7   7   3   3   'OPEN'  0       1*      0.5 /
+    'INJ-G'     1   1   1   1   'OPEN'  0       1*      0.5 /
+    'INJ-W'     1   1   1   1   'OPEN'  0       1*      0.5 /
+/
+
+-- Control data for production wells
+WCONPROD
+--  well        open/   ctrl    oil         BHP
+--  name        shut    mode    rate        pres
+    'PRODUCER'  'OPEN'  'ORAT'  12000   4*  1000 /
+/
+
+-- Economic limit data for production wells.
+-- OPM Flow does not support all actions to be taken when economic
+-- limits are violated, nor does it support terminating the 
+-- simulation when a well is shut in or stopped.
+WECON
+--  well                max     max             ctrl    end
+--  name                WCUT    GOR             mode    run
+    'PRODUCER'  1*  1*  5.0      10.0       1*  'NONE'  'NO' /
+/
+
+-- Control data for injection wells
+WCONINJE
+--  well        fluid   open/   cntl    surf        BHP
+--  name        type    shut    mode    rate        pres
+    'INJ-W'     'WAT'   'OPEN'  'RATE'  12000   1*  10000 /
+    'INJ-G'     'GAS'   'OPEN'  'RATE'  12000   1*  10000 /
+/
+
+-- Sets solvent fraction for gas injection wells
+WSOLVENT
+--  well        solvent
+--  name        fraction
+    'INJ-G'     1.0 /
+/
+
+-- YEARS 1 AND 2 : Production only -----------------------------
+-- Sets simulator control parameters
+TUNING
+-- TSINIT Maximum length of next timestep
+    2.0 /
+/
+/
+
+WELOPEN
+    'INJ-G'  'SHUT' /
+    'INJ-W'  'SHUT' /
+/
+
+TSTEP
+    40*18.25
+/
+
+-- YEAR 3 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 4 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 5 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 6 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 7 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 8 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 9 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 10 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 11 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC' 
+/
+
+-- YEAR 12 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 13 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 14 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 15 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 16 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 17 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 18 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+-- YEAR 19 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_WI.INC'
+/
+
+-- YEAR 20 ------------------------------------------------------
+INCLUDE
+    'CASE1_ONEYEAR_GI.INC'
+/
+
+END
