@@ -1,2 +1,2 @@
 # LEP1841
-Simulação de Reservatórios
+Simulação Numérica de Reservatórios
