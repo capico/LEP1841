@@ -3,12 +3,12 @@
 
 -- FIRST 3 MONTHS -----------------------------------------------
 --*WATER*--
--- Sets simulator control parameters
-TUNING
--- TSINIT Maximum length of next timestep
-    2.0 /
-/
-/
+-- -- Sets simulator control parameters
+-- TUNING
+-- -- TSINIT Maximum length of next timestep
+--     2.0 /
+-- /
+-- /
 
 WELOPEN
     'INJ-G'  'SHUT' /
@@ -16,15 +16,15 @@ WELOPEN
 /
 
 TSTEP
-    5*18.25
+    1.25 3*30.0
 /
 
 -- SECOND 3 MONTHS ----------------------------------------------
 --*GAS*--
-TUNING
-    2.0 /
-/
-/
+-- TUNING
+--     2.0 /
+-- /
+-- /
 
 
 WELOPEN
@@ -33,15 +33,15 @@ WELOPEN
 /
 
 TSTEP
-    5*18.25
+    1.25 3*30.0
 /
 
 --THIRD 3 MONTHS ------------------------------------------------
 --*WATER*--
-TUNING
-    2.0 /
-/
-/
+-- TUNING
+--     2.0 /
+-- /
+-- /
 
 WELOPEN
     'INJ-G'     'SHUT' /
@@ -49,15 +49,15 @@ WELOPEN
 /
 
 TSTEP
-    5*18.25
+    1.25 3*30.0
 /
 
 -- FOURTH 3 MONTHS ----------------------------------------------
 --*GAS*--
-TUNING
-    2.0 /
-/
-/
+-- TUNING
+--     2.0 /
+-- /
+-- /
 
 WELOPEN
     'INJ-W'  'SHUT' /
@@ -65,5 +65,5 @@ WELOPEN
 /
 
 TSTEP
-    5*18.25
+    1.25 3*30.0
 / ---------------------------------------------------------------

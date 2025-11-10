@@ -30,10 +30,6 @@
 -- a maximum bottomhole pressure of 4500 psia, gas rate = 30000 MCF/D 
 -- and water rate = 45000 STB/D.
 
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
--- IMPORTANT: To run with OPM Flow (2023.10), use the following command:
--- flow --enable-tuning=true SPE5_CASE3.DATA
-
 RUNSPEC ====================================================================
 
 TITLE
@@ -82,6 +78,10 @@ WELLDIMS
 START
     1 'JAN' 2000 
 /
+
+-- -- Constrained Pressure Residual linear solver
+-- CPR 
+-- /
 
 FMTIN
 UNIFOUT
@@ -261,7 +261,8 @@ PMISC
 
 -- Water PVT functions
 PVTW
-    4000.0  1.000  3.3D-6  0.70  0 
+-- 4000.0  1.000  3.3D-6  0.70  0.0 
+    14.7  1.000  3.3D-6  0.70  0.0 
 /
 
 -- Rock compressibility

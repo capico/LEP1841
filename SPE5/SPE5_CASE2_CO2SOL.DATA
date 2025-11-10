@@ -27,10 +27,6 @@
 -- 4500 psia, gas rate = 20000 MCF/D and water rate = 45000 STB/D, 
 -- on a standard three month WAG cycle, for a period of 20 years.
 
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
--- IMPORTANT: To run with OPM Flow (2025.04), use the following command:
--- flow --enable-tuning=true SPE5_CASE2_CO2SOL.DATA
-
 RUNSPEC ====================================================================
 
 TITLE
@@ -83,9 +79,9 @@ START
     1 'JAN' 2000 
 /
 
--- Constrained Pressure Residual linear solver
-CPR 
-/
+-- -- Constrained Pressure Residual linear solver
+-- CPR 
+-- /
 
 FMTIN
 UNIFOUT
@@ -276,7 +272,7 @@ PMISC
 -- not needed for CO2SOL
 -- -- Water PVT functions
 -- PVTW
---     4000.0  1.01024  2.8461D-6  0.39202  0 
+--    4000.0  0.98702     2.8461D-6   0.39202     0.0
 -- /
 
 -- Rock compressibility

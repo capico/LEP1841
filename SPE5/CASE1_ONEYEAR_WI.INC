@@ -2,12 +2,13 @@
 -- One year of Water Inj. plus Production
 
 --*WATER*--
--- Sets simulator control parameters
-TUNING
--- TSINIT Maximum length of next timestep
-    2.0 /
-/
-/
+-- This option causes convergence issues in OPM Flow
+-- -- Sets simulator control parameters
+-- TUNING
+-- -- TSINIT Maximum length of next timestep
+--     2.0 /
+-- /
+-- /
 
 WELOPEN
     'INJ-G'  'SHUT' /
@@ -15,5 +16,5 @@ WELOPEN
 /
 
 TSTEP
-    20*18.25
+    10*36.5
 / ---------------------------------------------------------------

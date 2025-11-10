@@ -28,10 +28,6 @@
 -- bottomhole pressure of 10000 psia, gas rate = 12000 MCF/D and 
 -- water rate = 12000 STB/D.
 
--- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
--- IMPORTANT: To run with OPM Flow (2023.10), use the following command:
--- flow --enable-tuning=true SPE5_CASE1.DATA
-
 RUNSPEC ====================================================================
 
 TITLE
@@ -80,6 +76,10 @@ WELLDIMS
 START
     1 'JAN' 2000 
 /
+
+-- -- Constrained Pressure Residual linear solver
+-- CPR 
+-- /
 
 FMTIN
 UNIFOUT
@@ -225,16 +225,23 @@ SSFN
     1.0  1.0  1.0
 /
 
+-- Miscible normalized relative permeability tables
+MSFN
+--  Sf      Mkrsg   Mkro
+    0.0000  0.0000  1.0000
+    1.0000  1.0000  0.0000
+/
+
 -- Miscible residual oil saturation tables
 SORWMIS
---  SWAT    SORWMIS
+--  Sw      SorwMIS
     0.000   0.000
     1.000   0.000
 /
 
 -- Miscible critical gas saturation tables
 SGCWMIS
---  SWAT    SGCRMIS
+--  Sw      SgcrMIS
     0.0000  0.000
     1.0000  0.000
 /
@@ -259,13 +266,14 @@ PMISC
 
 -- Water PVT functions
 PVTW
-    4000.0  1.000  3.3D-6  0.70  0 
+--    4000.0  1.000  3.3D-6  0.70  0.0 
+    14.7  1.000  3.3D-6  0.70  0.0 
 /
 
 -- Rock compressibility
 ROCK
 --  pref    cf
-    4000.0  5.0D-6 
+   4000.0  5.0D-6 
 /
 
 -- Fluid densities at surface conditions
@@ -534,12 +542,13 @@ WSOLVENT
 /
 
 -- YEARS 1 AND 2 : Production only -----------------------------
--- Sets simulator control parameters
-TUNING
--- TSINIT Maximum length of next timestep
-    2.0 /
-/
-/
+-- This option causes convergence issues in OPM Flow
+-- -- Sets simulator control parameters
+-- TUNING
+-- -- TSINIT Maximum length of next timestep
+--     2.0 /
+-- /
+-- /
 
 WELOPEN
     'INJ-G'  'SHUT' /
@@ -547,7 +556,7 @@ WELOPEN
 /
 
 TSTEP
-    40*18.25
+    20*36.5
 /
 
 -- YEAR 3 ------------------------------------------------------
