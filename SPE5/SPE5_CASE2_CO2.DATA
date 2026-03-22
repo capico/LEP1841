@@ -250,10 +250,10 @@ MISC
 -- Pressure-dependent miscibility tables
 -- misciblity pressure linear "ramp" from 1500 to 2000 psia
 PMISC
-    1000 0.0    -- minimum pressure (producer well constraint of cases 1 and 3)
-    1500 0.0
-    2000 1.0    -- MMP?
-    5500 1.0    -- maximum value listed in the PVTO table 
+    1000.0  0.0    -- minimum pressure (producer well constraint of cases 1 and 3)
+    1500.0  0.0
+    2302.3  1.0    -- MMP -> SPE-7477-PA
+    5500.0  1.0    -- maximum value listed in the PVTO table 
 /
 
 -- Water PVT functions
