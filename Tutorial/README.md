@@ -3,8 +3,6 @@ Esta pasta contém o material de apoio para a oficina de introdução aos simula
 
 A documentação do simulador OPM Flow e da ferramenta de pós-processamento ResInsight está disponível nas seguintes páginas:
 
- <a href="https://opm-project.org/" target="_blank">https://opm-project.org/</a>
-
- 
+ https://opm-project.org/ 
 
  https://resinsight.org/
