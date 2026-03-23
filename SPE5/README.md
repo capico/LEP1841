@@ -1,5 +1,5 @@
 # SPE Fifth Comparative Solution Project
-The provided files correspond to the three original scenarios described in *Fifth Comparative Solution Project: Evaluation of Miscible Flood Simulators*, by J.E. Killough and C.A. Kossack (SPE-16000-MS, 1987). The study compares the performance of various simulators for miscible flooding using water-alternating-gas (WAG) injection in a light oil reservoir, employing both full compositional models and simplified four-component models.
+The provided files correspond to the three original scenarios described in *Fifth Comparative Solution Project: Evaluation of Miscible Flood Simulators*, by J.E. Killough and C.A. Kossack (SPE-16000-MS, 1987, https://doi.org/10.2118/16000-MS). The study compares the performance of various simulators for miscible flooding using water-alternating-gas (WAG) injection in a light oil reservoir, employing both full compositional models and simplified four-component models.
 
 The files contain the input data to simulate the three cases using the four-component black oil model combined with the Todd and Longstaff miscible displacement formulation. All cases were confirmed to run successfully in the OPM Flow simulator. The three cases are:
 
