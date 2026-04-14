@@ -1,0 +1,500 @@
+-- This reservoir simulation deck is made available under the Open Database
+-- License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in
+-- individual contents of the database are licensed under the Database 
+-- Contents License: http://opendatacommons.org/licenses/dbcl/1.0/
+
+-- Copyright (C) 2015 Statoil
+
+-- *************************************************************************
+--                                 LEP1841
+-- *************************************************************************
+
+----------------------------------------------------------------------------
+----------------------------------- SPE 9 ----------------------------------
+----------------------------------------------------------------------------
+-- 
+-- This simulation is based on the data given in 
+-- 'Ninth SPE Comparative Solution Project:
+-- A Reexamination of Black-Oil Simulation',
+-- by J.E. Killough,
+-- Journal of Petroleum Technology, 1995
+
+-- The Ninth SPE Comparative Solution Project provides a 
+-- reexamination of black-oil simulation based on a model of 
+-- moderate size (9,000 cells) and with a high degree of 
+-- heterogeneity provided by a geostatistically-based 
+-- permeability field.
+-- The reservoir model includes 25 producers and one water 
+-- injector. Production wells were set to a minimum BHP of 
+-- 1000 psia at 9110 ft. Their oil rate limits were 1500 STB/D 
+-- initially, reduced to 100 STB/D at 300 days, and restored 
+-- to 1500 STB/D from 360 to 900 days. The injector was 
+-- limited to 5000 STBW/D with a maximum BHP of 4000 psia 
+-- at 9110 ft.
+
+-- This is a corner-point version of the original block-centered grid.
+
+RUNSPEC   ==================================================================
+
+TITLE
+   SPE 9th Comparative Solution Project - CASE 1
+
+DIMENS
+   24 25 15 
+/
+
+OIL
+WATER
+GAS
+DISGAS
+
+FIELD
+
+START
+   12 'FEB' 1995 
+/
+
+WELLDIMS
+-- Item 1: maximum number of wells in the model
+--     - there are 26 wells in SPE9; 1 injector and 25 producers
+-- Item 2: maximum number of grid blocks connected to any one well
+--     - the injector is completed in 5 layers
+-- Item 3: maximum number of groups in the model
+--     - only one group in model
+-- Item 4: maximum number of wells in any one group
+--     - this can definitetly not be more than 26 
+   26 5 1 26 
+/
+
+TABDIMS
+-- The number of rows in SWOF exceeds the default maximum,
+-- so item 3 in this keyword must be changed:
+   1* 1* 40 
+/
+
+EQLDIMS
+/
+
+UNIFOUT
+
+
+
+GRID      ==================================================================
+
+INIT
+
+NOECHO
+-- A corner-point grid was created for OPM Flow, preserving the pore 
+-- volumes of the original block-centered model, with a 10-degree dip 
+-- along the X-direction.
+INCLUDE
+   'SPE9.GRDECL' 
+/
+
+PORO
+-- Porosity in each level is contant
+-- The values are specified in table 1 in Killough's paper
+   600*0.087
+   600*0.097
+   600*0.111
+   600*0.16
+   600*0.13
+   600*0.17
+   600*0.17
+   600*0.08
+   600*0.14
+   600*0.13
+   600*0.12
+   600*0.105
+   600*0.12
+   600*0.116
+   600*0.157
+/
+
+-- PERMX, PERMY & PERMZ
+INCLUDE
+   PERMVALUES.DATA 
+/
+ECHO
+
+
+
+PROPS     ==================================================================
+
+PVTW
+-- Item 1: pressure reference (psia)
+-- Item 2: water FVF (rb per bbl or rb per stb)
+-- Item 3: water compressibility (psi^{-1})
+-- Item 4: water viscosity (cp)
+-- Item 5: water 'viscosibility' (psi^{-1})
+   3600  1.0034   1e-6  0.96  0 
+/
+
+ROCK
+-- Item 1: reference pressure (psia)
+-- Item 2: rock compressibility (psi^{-1})
+   3600   1e-6 
+/
+
+DENSITY
+--  Oil   Water   Gas
+   44.98  63.01  0.0702  
+/
+   
+PVTO
+-- Column 1: dissolved gas-oil ratio (Mscf per stb)
+-- Column 2: bubble point pressure for oil (psia)
+-- Column 3: oil FVF for saturated oil (rb per stb)
+-- Column 4: oil viscosity for saturated oil (cP)
+-- Rs        pbub    Bo      mu_o
+   0         14.7    1.0000  1.20 /
+   0.165     400     1.0120  1.17 /
+   0.335     800     1.0255  1.14 /
+   0.500     1200    1.0380  1.11 /
+   0.665     1600    1.0510  1.08 /
+   0.828     2000    1.0630  1.06 /
+   0.985     2400    1.0750  1.03 /
+   1.130     2800    1.0870  1.00 /
+   1.270     3200    1.0985  0.98 /
+   1.390     3600    1.1100  0.95 /
+   1.500     4000    1.1200  0.94 
+             4600    1.1089  0.94 /
+/
+-- The saturation pressure of the oil is 3600 psia.
+-- At 1000 psi above the saturation pressure the 
+-- Bo is 0.999 times that of the Bo at psat.
+
+PVDG
+-- Column 1: gas phase pressure (psia)
+-- Column 2: gas formation volume factor (rb per Mscf)
+-- Column 3: gas viscosity (cP)
+-- pg     Bg           mu_g
+   14.7   191.7443     0.0125
+   400    5.8979       0.0130
+   800    2.9493       0.0135
+   1200   1.9594       0.0140
+   1600   1.4695       0.0145
+   2000   1.1797       0.0150
+   2400   0.9796       0.0155
+   2800   0.8397       0.0160
+   3200   0.7398       0.0165
+   3600   0.6498       0.0170
+   4000   0.5849       0.0175 
+/
+
+SGOF
+-- Column 1: gas saturation
+-- Column 2: gas relative permeability
+-- Column 3: oil relative permeability when oil, gas and 
+--           connate water are present
+-- Column 4: corresponding oil-gas capillary pressure (psi)
+-- Sg       krg       krog   pcgo
+   0        0         1      0
+   0.04     0         0.6    0.2
+   0.1      0.022     0.33   0.5
+   0.2      0.1       0.1    1.0
+   0.3      0.24      0.02   1.5
+   0.4      0.34      0      2.0
+   0.5      0.42      0      2.5
+   0.6      0.5       0      3.0
+   0.7      0.8125    0      3.5
+   0.84891  1.0       0      3.9 
+/
+
+SWOF
+-- Column 1: water saturation
+-- Column 2: water relative permeability
+-- Column 3: oil relative permeability when only oil 
+--           and water are present
+-- Column 4: corresponding water-oil capillary pressure (psi) 
+-- Sw          krw         krow        pcow
+   0.151090    0.0         1.0         400.0
+   0.151230    0.0         0.99997     359.190
+   0.151740    0.0         0.99993     257.920
+   0.152460    0.0         0.99991     186.310
+   0.156470    0.0         0.999510    79.060
+   0.165850    0.0         0.996290    40.010
+   0.178350    0.0         0.991590    27.930
+   0.203350    0.000010    0.978830    20.400
+   0.253350    0.000030    0.943730    15.550
+   0.350000    0.000280    0.830230    11.655
+   0.352000    0.002292    0.804277    8.720
+   0.354000    0.004304    0.778326    5.947
+   0.356000    0.006316    0.752374    3.317
+   0.358000    0.008328    0.726422    1.165
+   0.360000    0.010340    0.700470    0.463
+   0.364395    0.015548    0.642258    -0.499
+   0.368790    0.020756    0.584046    -1.139
+   0.370000    0.022190    0.568020    -1.194
+   0.380000    0.035890    0.434980    -1.547
+   0.400000    0.069530    0.171430    -1.604
+   0.433450    0.087900    0.125310    -1.710
+   0.461390    0.104910    0.094980    -1.780
+   0.489320    0.123290    0.070530    -1.860
+   0.517250    0.143030    0.051130    -1.930
+   0.573120    0.186590    0.024640    -2.070
+   0.601060    0.210380    0.016190    -2.130
+   0.656930    0.261900    0.005940    -2.260
+   0.712800    0.318650    0.001590    -2.380
+   0.811110    0.430920    0.000020    -2.600
+   0.881490    0.490000    0.000000    -2.750 
+/
+-- A notable feature of the capillary pressure curve is the 
+-- tail, which terminates before reaching a water saturation 
+-- of 1.0. Because of the lack of data above Sw=0.88149 a 
+-- small residual oil saturation exists throughout the modeled 
+-- reservoir.
+
+
+
+SOLUTION  ==================================================================
+
+EQUIL
+-- Item 1: datum depth (ft)
+-- Item 2: pressure at datum depth (psia)
+--     - Killough says initial oil phase pressure is
+--     - 3600psia at depth 9035ft
+-- Item 3: depth of water-oil contact (ft)
+--     - Given to be 9950 ft in Killough's paper
+-- Item 4: oil-water capillary pressure at the water oil contact (psi)
+--     - Given to be 0 in Killough's dataset
+-- Item 5: depth of gas-oil contact (ft)
+--     - 8800ft in Killough's dataset
+-- Item 6: gas-oil capillary pressure at gas-oil contact (psi)
+--     - Given to be 0 in Killough's dataset
+-- Item 7: RSVD-table
+-- Item 8: RVVD-table
+-- Item 9: OPM only supports item 9 equal to zero.
+-- #: 1     2     3   4     5  6  7  8  9
+   9035  3600  9950   0  8800  0  1  0  0 
+/
+-- Since there is no free gas initially present, the gas-oil 
+-- contact should lie above the reservoir (Item 5).
+
+-- The initial oil phase pressure at depth 9035 ft is given to be 
+-- 3600 psia, at which the Rs is 1.39 Mscf per stb according to 
+-- Killough's table 2. The oil saturation pressure is 3600 psia. 
+-- For blocks with oil pressures below this value, the saturation 
+-- pressure is defined as equal to the oil phase pressure. For 
+-- blocks with oil pressures above this value, the saturation 
+-- pressure is defined as 3600 psia (or Rs=1.39).
+RSVD
+-- Depth    Rs
+   8800     1.39
+   10600    1.39 
+/
+-- The initial Rs is calculated from a table of Rs versus depth 
+-- (or a table of pb versus depth), subject to an upper limit equal 
+-- to the saturated Rs value at the local pressure.
+
+-- PBVD
+-- -- Depth    pb     
+--    8800     3600
+--    10600    3600 
+-- /
+
+RPTRST
+   'BASIC=2'   'PCOW'   'PRES'
+/
+
+
+
+SUMMARY   ==================================================================
+
+-- Killough's figure 7:
+FGOR
+-- Killough's figure 8:
+FOPR
+-- Killough's figure 9:
+FGPR
+-- Killough's figure 10:
+FWPR
+-- Killough's figure 11:
+BPR
+   1 1 1 /
+/
+-- Killough's figure 12:
+BGSAT
+   1 13 1 /
+/
+-- Killough's figure 13:
+BWSAT
+   10 25 15 /
+/
+-- Killough's figure 14:
+WWIR
+   'INJE1' 
+/
+-- Killough's figure 15:
+WOPR
+   'PRODU21' 
+/
+
+FOE
+
+-- In order to compare Eclipse with Flow:
+WBHP
+/
+WGPR
+/
+WGPT
+/
+WOPR
+/
+WOPT
+/
+WWIR
+/
+WWIT
+/
+WWPR
+/
+WWPT
+/
+WMCTL
+/
+
+NEWTON
+TCPU
+ELAPSED
+MAXDPR
+RUNSUM
+SEPARATE
+
+
+
+SCHEDULE  ==================================================================
+
+RPTRST
+   'BASIC=2'   'PCOW'   'PRES'
+/
+
+WELSPECS
+-- Column 3: I-value of well head or heel
+-- Column 4: J-value of well head or heel
+--       - these coordinates are listed in Killough's dataset
+-- Column 5: ref. depth of BHP (ft)
+--           - stated in the middle of the top perforated cell
+--       - not anymore stated to be 9110ft in Killough
+-- Column 6: preferred phase for well
+--       - should be water for injector and oil for producers
+-- Column 7: drainage radius for calc. of productivity or 
+--           injectivity indices (ft)
+--       - stated to be 60ft in Killough
+-- #: 1        2    3  4     5  6       7  
+   'INJE1'    'P'  24 25  9110 'WATER'  60   /
+   'PRODU2'   'P'   5  1  9110 'OIL'    60   /
+   'PRODU3'   'P'   8  2  9110 'OIL'    60   /
+   'PRODU4'   'P'  11  3  9110 'OIL'    60   /
+   'PRODU5'   'P'  10  4  9110 'OIL'    60   /
+   'PRODU6'   'P'  12  5  9110 'OIL'    60   /
+   'PRODU7'   'P'   4  6  9110 'OIL'    60   /
+   'PRODU8'   'P'   8  7  9110 'OIL'    60   /
+   'PRODU9'   'P'  14  8  9110 'OIL'    60   /
+   'PRODU10'  'P'  11  9  9110 'OIL'    60   /
+   'PRODU11'  'P'  12 10  9110 'OIL'    60   /
+   'PRODU12'  'P'  10 11  9110 'OIL'    60   /
+   'PRODU13'  'P'   5 12  9110 'OIL'    60   /
+   'PRODU14'  'P'   8 13  9110 'OIL'    60   /
+   'PRODU15'  'P'  11 14  9110 'OIL'    60   /
+   'PRODU16'  'P'  13 15  9110 'OIL'    60   /
+   'PRODU17'  'P'  15 16  9110 'OIL'    60   /
+   'PRODU18'  'P'  11 17  9110 'OIL'    60   /
+   'PRODU19'  'P'  12 18  9110 'OIL'    60   /
+   'PRODU20'  'P'   5 19  9110 'OIL'    60   /
+   'PRODU21'  'P'   8 20  9110 'OIL'    60   /
+   'PRODU22'  'P'  11 21  9110 'OIL'    60   /
+   'PRODU23'  'P'  15 22  9110 'OIL'    60   /
+   'PRODU24'  'P'  12 23  9110 'OIL'    60   /
+   'PRODU25'  'P'  10 24  9110 'OIL'    60   /
+   'PRODU26'  'P'  17 25  9110 'OIL'    60   /
+/
+
+COMPDAT
+-- Column 2: I-value of connecting grid block
+-- Column 3: J-value of connecting grid block
+-- Column 4: K-value of upper connecting grid block
+-- Column 5: K-value of lower connecting grid block
+--       - these coordinates are listed in Killough's dataset
+-- Column 6: Open/shut flag of connection 
+-- Column 7: Saturation table number for connection relative 
+--           permeabilities
+-- Column 8: Transmissibility factor for the connection
+-- Column 9: well bore diameter
+--       - Killough says radius is 0.5ft
+-- #: 1            2  3  4    5     6   7   8   9 
+   'INJE1'        24 25 11   15 'OPEN'  1*  1*  1 /
+   'PRODU2'        5  1  2    4 'OPEN'  1*  1*  1 /
+   'PRODU3'        8  2  2    4 'OPEN'  1*  1*  1 /
+   'PRODU4'       11  3  2    4 'OPEN'  1*  1*  1 /
+   'PRODU5'       10  4  2    4 'OPEN'  1*  1*  1 /
+   'PRODU6'       12  5  2    4 'OPEN'  1*  1*  1 /
+   'PRODU7'        4  6  2    4 'OPEN'  1*  1*  1 /
+   'PRODU8'        8  7  2    4 'OPEN'  1*  1*  1 /
+   'PRODU9'       14  8  2    4 'OPEN'  1*  1*  1 /
+   'PRODU10'      11  9  2    4 'OPEN'  1*  1*  1 /
+   'PRODU11'      12 10  2    4 'OPEN'  1*  1*  1 /
+   'PRODU12'      10 11  2    4 'OPEN'  1*  1*  1 /
+   'PRODU13'       5 12  2    4 'OPEN'  1*  1*  1 /
+   'PRODU14'       8 13  2    4 'OPEN'  1*  1*  1 /
+   'PRODU15'      11 14  2    4 'OPEN'  1*  1*  1 /
+   'PRODU16'      13 15  2    4 'OPEN'  1*  1*  1 /
+   'PRODU17'      15 16  2    4 'OPEN'  1*  1*  1 /
+   'PRODU18'      11 17  2    4 'OPEN'  1*  1*  1 /
+   'PRODU19'      12 18  2    4 'OPEN'  1*  1*  1 /
+   'PRODU20'       5 19  2    4 'OPEN'  1*  1*  1 /
+   'PRODU21'       8 20  2    4 'OPEN'  1*  1*  1 /
+   'PRODU22'      11 21  2    4 'OPEN'  1*  1*  1 /
+   'PRODU23'      15 22  2    4 'OPEN'  1*  1*  1 /
+   'PRODU24'      12 23  2    4 'OPEN'  1*  1*  1 /
+   'PRODU25'      10 24  2    4 'OPEN'  1*  1*  1 /
+   'PRODU26'      17 25  2    4 'OPEN'  1*  1*  1 /
+/
+
+WCONINJE
+-- Killough says the water injector is set to a max rate of
+-- 5000 STBW per D with a max BHP of 4000psia at a reference 
+-- depth of 9110ft subsea:
+-- #:   1       2      3      4     5  6     7
+   'INJE1' 'WATER' 'OPEN' 'RATE' 5000  1* 4000 /
+/
+
+WCONPROD
+-- Killough says the max oil rate for all producers is set to 
+-- 1500 STBO per D at time zero and that the min flowing BHP
+-- is set to 1000psia (with a ref. depth of 9110ft
+-- for this pressure in all wells):
+-- #:   1        2     3     4         9
+   'PRODU*' 'OPEN' 'ORAT' 1500  4*  1000  /
+-- Here, the wildcard '*' has been used to indicate that this 
+-- applies to all producers; PRODU1-PRODU25.
+/
+
+TSTEP
+   30*10    -- 300 days
+/
+
+-- At 300 days, the max oil rate for all producers is lowered
+-- to 100 STBO per D:
+-- WELTARG modifies the target and constraints without having 
+-- to define all the variables on the well control keywords.
+WELTARG
+   'PRODU*'  'ORAT'   100 /
+/
+
+TSTEP
+   6*10     -- 360 days
+/
+
+-- At 360 days, the max oil rate for all producers is changed
+-- back to 1500 STBO per D:
+WELTARG
+   'PRODU*'  'ORAT'   1500 /
+/
+
+TSTEP
+   54*10    -- 900 days 
+/
+-- End of simulation at 900 days
+
+END
