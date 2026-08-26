@@ -1,7 +1,10 @@
 -- CORNER_POINT_EXAMPLE.GRDECL
 
--- To open this file in ResInsight, go to:
+-- To open this file in ResInsight 2025.09.02 or earlier, go to:
 -- File > Import > Eclipse Cases > Import Input Eclipse Case
+
+-- To open this file in ResInsight 2026.06.01 or later, go to:
+-- File > Import > Import Grid Models (Text Grid Models (*.GRDECL))
 
 -- Specification of the grid characteristics
 SPECGRID
